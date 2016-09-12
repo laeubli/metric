@@ -36,7 +36,8 @@ class Reference(object):
     def __init__(self, reference, metric):
         """
         @param reference: The reference againt which hypotheses shall be
-                          compared.
+                          scored.
+        @param metric:    The metric to be used for the scoring.
         """
         self.metric = metric
         self.reference = reference
