@@ -12,18 +12,9 @@ class BecherovkaMetric(Metric):
     def score(self, reference, hypothesis):
         return 100.0 if reference == hypothesis else 0.0
 
-class BecherovkaReference(Reference):
-    """
-    A reference translation against which hypotheses can be scored through
-    BecherovkaMetric.
-    """
-
-    def __init__(self, reference):
-        metric = BecherovkaMetric()
-        Reference.__init__(self, reference, metric)
-
 
 if __name__ == "__main__":
-    ref = BecherovkaReference("This is a small drink.")
+    metric = BecherovkaMetric()
+    ref = Reference("This is a small drink.", metric)
     print ref.score("This is a big drink.")
     print ref.score_many(["This is a small drink.", "This is a big drink."])
