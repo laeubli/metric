@@ -10,27 +10,22 @@ from reference import Reference
 
 class SmoothedBleuReference(Reference):
     """
-    Implements smoothed sentence-level BLEU as as proposed by Lin and Och (2004).
+    Smoothed sentence-level BLEU as as proposed by Lin and Och (2004).
+    Implemented as described in (Chen and Cherry, 2014).
     """
 
-    def __init__(self, reference, n=4):
+    def __init__(self, reference_tokens, n=4):
         """
         @param reference the reference translation that hypotheses shall be
-                         scored against.
+                         scored against. Must be an iterable of tokens (any
+                         type).
         @param n         maximum n-gram order to consider.
         """
-        Reference.__init__(self, reference)
+        Reference.__init__(self, reference_tokens)
         self.n = n
         # preprocess reference
-        self._reference_tokens = self._get_tokens(self.reference)
         self._reference_length = len(self._reference_tokens)
         self._reference_ngrams = self._get_ngrams(self._reference_tokens, self.n)
-
-    def _get_tokens(self, sentence):
-        """
-        Splits @param sentence into a list of tokens.
-        """
-        return sentence.split(" ") #todo: adjust to Nematus
 
     def _get_ngrams(self, tokens, max_n):
         """
@@ -41,7 +36,7 @@ class SmoothedBleuReference(Reference):
             return zip(*[tokens[i:] for i in range(n)])
         return {n: ngrams(tokens, n) for n in range(1, max_n+1)}
 
-    def score(self, hypothesis):
+    def score(self, hypothesis_tokens):
         """
         Scores @param hypothesis against this reference.
         @return the smoothed sentence-level BLEU score.
@@ -63,7 +58,6 @@ class SmoothedBleuReference(Reference):
         def brevity_penalty(ref_length, hyp_length):
             return min(1.0, exp(1-(ref_length/hyp_length)))
         # preprocess hypothesis
-        hypothesis_tokens = self._get_tokens(hypothesis)
         hypothesis_length = len(hypothesis_tokens)
         hypothesis_ngrams = self._get_ngrams(hypothesis_tokens, self.n)
         # calculate n-gram precision for all orders

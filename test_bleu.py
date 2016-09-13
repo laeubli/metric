@@ -9,13 +9,16 @@ class TestSmoothedBleuReference(unittest.TestCase):
     """
     Regression tests for SmoothedBleuReference
     """
+    @staticmethod
+    def tokenize(sentence):
+        return sentence.split(" ")
     def test_identical_segments(self):
-        segment = "Consistency is the last refuge of the unimaginative."
+        segment = self.tokenize("Consistency is the last refuge of the unimaginative")
         ref = SmoothedBleuReference(segment)
         self.assertEqual(ref.score(segment), 100.0)
     def test_completely_different_segments(self):
-        segment_a = "A A A"
-        segment_b = "B B B"
+        segment_a = self.tokenize("A A A")
+        segment_b = self.tokenize("B B B")
         ref = SmoothedBleuReference(segment_a)
         self.assertEqual(ref.score(segment_b), 0.00)
 
