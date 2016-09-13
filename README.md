@@ -1,4 +1,4 @@
 # metric
 
-Defines abstract objects for automatic MT evaluation metrics and re-usable
-references. See [becherovka_metric.py](becherovka_metric.py) for an example.
+Defines abstract objects for automatic MT evaluation using re-usable references.
+See [becherovka.py](becherovka.py) for an example.
