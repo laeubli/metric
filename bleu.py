@@ -10,8 +10,7 @@ from reference import Reference
 
 class SmoothedBleuReference(Reference):
     """
-    Implements smoothed sentence-level BLEU as in NIST's official mteval-v13a.pl
-    toolkit, described in (Chen and Cherry, 2014).
+    Implements smoothed sentence-level BLEU as as proposed by Lin and Och (2004).
     """
 
     def __init__(self, reference, n=4):
@@ -51,15 +50,15 @@ class SmoothedBleuReference(Reference):
             return reduce(mul, iterable, 1)
         def ngram_precisions(ref_ngrams, hyp_ngrams):
             precisions = []
-            invcnt = 1
             for n in range(1, self.n+1):
                 overlap = len([ngram for ngram in hyp_ngrams[n] if ngram in ref_ngrams[n]])
-                if overlap == 0:
-                    # smoothing as in NIST's mteval-v13a.pl,
-                    # as desceribed in (Chen and Cherry, 2014)
-                    invcnt*=2
-                    overlap = 1/invcnt
-                precisions.append(overlap/len(hyp_ngrams[n]))
+                hyp_length = len(hyp_ngrams[n])
+                if n >= 2:
+                    # smoothing as proposed by Lin and Och (2004),
+                    # implemented as described in (Chen and Cherry, 2014)
+                    overlap += 1
+                    hyp_length += 1
+                precisions.append(overlap/hyp_length)
             return precisions
         def brevity_penalty(ref_length, hyp_length):
             return min(1.0, exp(1-(ref_length/hyp_length)))
