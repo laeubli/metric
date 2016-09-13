@@ -65,4 +65,4 @@ class SmoothedBleuReference(Reference):
         # calculate brevity penalty
         bp = brevity_penalty(self._reference_length, hypothesis_length)
         # compose final BLEU score
-        return product(np)**(1/self.n) * bp * 100.0
+        return product(np)**(1/self.n) * bp
