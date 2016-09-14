@@ -39,7 +39,9 @@ class SmoothedBleuReference(Reference):
     def score(self, hypothesis_tokens):
         """
         Scores @param hypothesis against this reference.
-        @return the smoothed sentence-level BLEU score.
+
+        @return the negative smoothed sentence-level BLEU score:
+                -1.0 is best, -0.0 is worst.
         """
         def product(iterable):
             return reduce(mul, iterable, 1)
@@ -65,4 +67,4 @@ class SmoothedBleuReference(Reference):
         # calculate brevity penalty
         bp = brevity_penalty(self._reference_length, hypothesis_length)
         # compose final BLEU score
-        return product(np)**(1/self.n) * bp
+        return -(product(np)**(1/self.n) * bp)
