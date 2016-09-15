@@ -3,7 +3,7 @@
 
 METEOR_PATH="/home/juli/data/programming/meteor-1.5"
 
-import subprocess
+import subprocess, threading
 from reference import Reference
 
 class MeteorScorer():
@@ -11,6 +11,7 @@ class MeteorScorer():
     Starts a METEOR process and keeps it alive, so that the model can be kept in memeory.
     """
     def __init__(self, meteor_language="en", meteor_path="~/meteor"):
+        self.lock = threading.Lock()
         self.meteor_language = meteor_language
         self.meteor_path = meteor_path + "/"
         command = "java -Xmx2G -jar "+self.meteor_path+"meteor-*.jar - - -l "+self.meteor_language+" -stdio"
@@ -38,10 +39,12 @@ class MeteorReference(Reference):
 
     def score(self, hypothesis_tokens):
         reference_string = " ".join(hypothesis_tokens)
+        self.meteor_scorer.lock.acquire()
         self.meteor_scorer.meteor_process.stdin.write("SCORE ||| "+self.reference_string+" ||| "+reference_string+"\n")
         std_out = self.meteor_scorer.meteor_process.stdout.readline()
         self.meteor_scorer.meteor_process.stdin.write("EVAL ||| "+std_out)
         std_out = self.meteor_scorer.meteor_process.stdout.readline()
+        self.meteor_scorer.lock.release()
         return float(std_out)
     
 if __name__ == "__main__":
